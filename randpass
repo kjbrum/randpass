@@ -1,0 +1,88 @@
+#!/usr/bin/env bash
+
+# Random Password Generator
+# Generate a random password and copy it to your clipboard.
+# Copyright (C) Kyle Brumm <http://kylebrumm.com>
+
+
+if [ "$1" = "-h" -o "$1" = "--help" ]; then cat <<EOF
+
+Randpass
+
+Generate a random password and copy it to your clipboard.
+
+You can choose the length of the password, as well as the type.
+The default password is 16 characters long and will be a mix of all the types.
+
+Usage:
+    randpass -l 10
+    randpass -t num
+    randpass -l 12 -t alphanum
+
+Options:
+    -h    Display help prompt
+    -l    Password length
+    -t    Password Type: alphanum, alpha, num, sym
+
+EOF
+exit; fi
+
+MAXSIZE=16
+TYPE=''
+
+while getopts "l:t:" opt; do
+    case $opt in
+        l)
+            MAXSIZE=$OPTARG
+            ;;
+        t)
+            TYPE=$OPTARG
+            ;;
+    esac
+done
+
+case "$TYPE" in
+    alpha)
+        array1=(
+            a b c d e f g h i j k l m n o p q r s t u v w x y z
+            A B C D E F G H I J K L M N O P Q R S T U V W X Y Z
+        )
+        ;;
+    num)
+        array1=(
+            1 2 3 4 5 6 7 8 9 0
+        )
+        ;;
+    alphanum)
+        array1=(
+            a b c d e f g h i j k l m n o p q r s t u v w x y z
+            A B C D E F G H I J K L M N O P Q R S T U V W X Y Z
+            1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0
+        )
+        ;;
+    sym)
+        array1=(
+            \~ \! \@ \# \$ \% \^ \& \* \( \) \_ \- \+ \= \{ \} \[ \] \\ \: \; \< \> \, \. \? \/
+        )
+        ;;
+    *)
+        array1=(
+            q w e r t y u i o p a s d f g h j k l z x c v b n m Q W E R T Y U I O P A S D
+            F G H J K L Z X C V B N M 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0
+            \~ \! \@ \# \$ \% \^ \& \* \( \) \_ \- \+ \= \{ \} \[ \] \\ \: \; \< \> \, \. \? \/
+        )
+        ;;
+esac
+
+MODNUM=${#array1[*]}
+pwd_len=0
+pass_str=''
+
+while [ $pwd_len -lt $MAXSIZE ]; do
+    index=$(($RANDOM%$MODNUM))
+    pass_str=$pass_str${array1[$index]}
+    ((pwd_len++))
+done
+
+echo "${pass_str}" | tr -d '\n' | pbcopy
+echo "${pass_str}"
