@@ -1,88 +1,118 @@
 #!/usr/bin/env bash
 
-# Random Password Generator
+# Randpass - Random Password Generator
 # Generate a random password and copy it to your clipboard.
 # Copyright (C) Kyle Brumm <http://kylebrumm.com>
 
+# Display the help text
+usage() {
+cat << EOF
 
-if [ "$1" = "-h" -o "$1" = "--help" ]; then cat <<EOF
-
-Randpass
+Randpass - Random Password Generator
 
 Generate a random password and copy it to your clipboard.
-
-You can choose the length of the password, as well as the type.
-The default password is 16 characters long and will be a mix of all the types.
+The default password is 15 characters long and will be a mix of all the types.
 
 Usage:
-    randpass -l 10
-    randpass -t num
-    randpass -l 12 -t alphanum
+    $ randpass <options>
 
 Options:
     -h    Display help prompt
     -l    Password length
-    -t    Password Type: alphanum, alpha, num, sym
+    -t    Password Type (alpha|num|sym|alphanum|alphasym|numsym)
+
+Example:
+    $ randpass -l 10
+    $ randpass -t num
+    $ randpass -l 20 -t alphanum
 
 EOF
-exit; fi
+}
 
-MAXSIZE=16
+# Set up the variables
+MAXSIZE=15
 TYPE=''
 
-while getopts "l:t:" opt; do
+# Parse the options
+while getopts ":hl:t:" opt; do
     case $opt in
+        h)
+            usage
+            exit 1
+            ;;
         l)
             MAXSIZE=$OPTARG
             ;;
         t)
             TYPE=$OPTARG
             ;;
+        ?)
+            usage
+            exit 1
+            ;;
     esac
 done
 
+# Decide what type of password to make
 case "$TYPE" in
     alpha)
-        array1=(
+        options=(
             a b c d e f g h i j k l m n o p q r s t u v w x y z
             A B C D E F G H I J K L M N O P Q R S T U V W X Y Z
         )
         ;;
     num)
-        array1=(
+        options=(
             1 2 3 4 5 6 7 8 9 0
         )
         ;;
-    alphanum)
-        array1=(
-            a b c d e f g h i j k l m n o p q r s t u v w x y z
-            A B C D E F G H I J K L M N O P Q R S T U V W X Y Z
-            1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0
+    sym)
+        options=(
+            \~ \! \@ \# \$ \% \^ \& \* \( \) \_ \- \+ \= \{ \} \[ \] \\ \: \; \< \> \, \. \? \/
         )
         ;;
-    sym)
-        array1=(
+    alphanum)
+        options=(
+            a b c d e f g h i j k l m n o p q r s t u v w x y z
+            A B C D E F G H I J K L M N O P Q R S T U V W X Y Z
+            1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0
+        )
+        ;;
+    alphasym)
+        options=(
+            a b c d e f g h i j k l m n o p q r s t u v w x y z
+            A B C D E F G H I J K L M N O P Q R S T U V W X Y Z
+            \~ \! \@ \# \$ \% \^ \& \* \( \) \_ \- \+ \= \{ \} \[ \] \\ \: \; \< \> \, \. \? \/
+        )
+        ;;
+    numsym)
+        options=(
+            1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0
             \~ \! \@ \# \$ \% \^ \& \* \( \) \_ \- \+ \= \{ \} \[ \] \\ \: \; \< \> \, \. \? \/
         )
         ;;
     *)
-        array1=(
-            q w e r t y u i o p a s d f g h j k l z x c v b n m Q W E R T Y U I O P A S D
-            F G H J K L Z X C V B N M 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0
+        options=(
+            a b c d e f g h i j k l m n o p q r s t u v w x y z
+            A B C D E F G H I J K L M N O P Q R S T U V W X Y Z
+            1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0
             \~ \! \@ \# \$ \% \^ \& \* \( \) \_ \- \+ \= \{ \} \[ \] \\ \: \; \< \> \, \. \? \/
         )
         ;;
 esac
 
-MODNUM=${#array1[*]}
+# More variables
+MODNUM=${#options[*]}
 pwd_len=0
 pass_str=''
 
+# Create the password
 while [ $pwd_len -lt $MAXSIZE ]; do
     index=$(($RANDOM%$MODNUM))
-    pass_str=$pass_str${array1[$index]}
+    pass_str=$pass_str${options[$index]}
     ((pwd_len++))
 done
 
+# Print the password and copy to clipboard
 echo "${pass_str}" | tr -d '\n' | pbcopy
 echo "${pass_str}"
