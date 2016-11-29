@@ -1,24 +1,24 @@
 #!/usr/bin/env bash
 
-# Randpass - Random Password Generator
+# Randpass
 # Generate a random password and copy it to your clipboard.
+#
 # Copyright (C) Kyle Brumm <http://kylebrumm.com>
 
 # Display the help text
 usage() {
 cat <<EOF
 
-Randpass - Random Password Generator
+Randpass
 
 Generate a random password and copy it to your clipboard.
-The default password is 15 characters long and will be a mix of all the types.
 
 Usage:
     $ randpass <options>
 
 Options:
     -h    Display help prompt
-    -l    Password length
+    -l    Password length (15)
     -t    Password Type (alpha|num|sym|alphanum|alphasym|numsym)
 
 Example:
