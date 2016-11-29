@@ -6,7 +6,7 @@
 
 # Display the help text
 usage() {
-cat << EOF
+cat <<EOF
 
 Randpass - Random Password Generator
 
@@ -27,6 +27,7 @@ Example:
     $ randpass -l 20 -t alphanum
 
 EOF
+exit 0;
 }
 
 # Set up the variables
